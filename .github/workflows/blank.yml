@@ -3,19 +3,17 @@ name: 24/7 SSH Runner (sshx)
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-  # Automatically restarts every 4 hours to match the 240-minute limit
+  # Har 4 ghante me apne aap restart hoga (240 mins limit ke liye)
   schedule:
     - cron: '0 */4 * * *' 
-  # Allows manual start from the Actions tab
+  # Manual start karne ka button
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     
-    # Setting the limit to 240 minutes (4 hours) as requested
+    # GitHub Actions ki max limit 240 minutes (4 hours) hoti hai
     timeout-minutes: 240 
 
     steps:
@@ -24,30 +22,30 @@ jobs:
 
       - name: Start SSH and Keep Alive
         run: |
-          echo "Starting sshx server..."
+          echo "Installing sshx..."
           
-          # 1. Start sshx in the background using '&'
-          # This provides a unique link to access your terminal
+          # 1. sshx server ko background mein start karein
           curl -sSf https://sshx.io/get | sh -s run &
           
-          # Wait 10 seconds to ensure the link is generated in the logs
-          sleep 10
+          # 15 seconds wait karein taaki link generate ho jaye
+          sleep 15
           
+          echo ""
           echo "--------------------------------------------------------"
-          echo "INSTRUCTIONS:"
-          echo "1. Scroll up/down in these logs."
-          echo "2. Look for a link like: https://sshx.io/s/XXXXXXXX"
-          echo "3. Click the link to open your terminal."
+          echo " TERMINAL LINK DHUNDHEIN: "
+          echo " Neeche logs mein 'https://sshx.io/s/XXXXXXXX' jaisa link hoga."
+          echo " Use click karke apna terminal open karein."
           echo "--------------------------------------------------------"
+          echo ""
 
           # 2. Keep Alive Loop
-          # Set for 235 minutes (3 hours 55 mins) to prevent early shutdown
+          # Isse runner 235 minutes tak chalta rahega (Band nahi hoga)
           end=$((SECONDS + 235 * 60))
           
           while [ $SECONDS -lt $end ]; do
-            echo "Status: Runner Active | Timestamp: $(date)"
-            # Updates logs every 5 minutes
+            echo "Status: Runner Active | Time: $(date)"
+            # Logs update karne ke liye har 5 minute mein print karega
             sleep 300 
           done
           
-          echo "Timeout approaching. Gracefully shutting down for the next scheduled job."
+          echo "Time khatam ho raha hai. Agla scheduled job jald shuru hoga."
